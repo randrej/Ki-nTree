@@ -13,6 +13,7 @@ before_install:
 install: skip
 
 script: 
+    - cp test/files/token_storage.json search/
     - cat search/token_storage.json
     - python test_digikey_api.py
     - cat search/token_storage.json
