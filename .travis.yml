@@ -7,7 +7,10 @@ python:
     - 3.6
 
 before_install:
-    - pip install invoke
+    - git config --global user.email "eeintech@eeinte.ch"
+    - git config --global user.name "eeintech"
+    - git clone https://${GH_TOKEN}@github.com/eeintech/digikey-token.git
+    - cat digikey-token/token_storage.json
     - pip install -r requirements.txt
     
 install: skip
@@ -17,3 +20,10 @@ script:
     - cat search/token_storage.json
     - python test_digikey_api.py
     - cat search/token_storage.json
+
+after_success:
+    - cp search/token_storage.json digikey-token/
+    - cd digikey-token
+    - git add -A
+    - git ci -m "Updated token"
+    - git push origin master
