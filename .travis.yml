@@ -24,6 +24,6 @@ script:
 after_success:
     - cp search/token_storage.json digikey-token/
     - cd digikey-token
-    - git add -A
-    - git ci -m "Updated token"
+    - git add -u
+    - git commit -m "Updated token"
     - git push origin master
