@@ -7,8 +7,8 @@ python:
     - 3.6
 
 before_install:
-    - git config --global user.email "eeintech@eeinte.ch"
-    - git config --global user.name "eeintech"
+    - git config --global user.email "travis@travis-ci.com"
+    - git config --global user.name "Travis CI"
     - git clone https://${GH_TOKEN}@github.com/eeintech/digikey-token.git
     - cat digikey-token/token_storage.json
     - pip install -r requirements.txt
@@ -16,7 +16,7 @@ before_install:
 install: skip
 
 script: 
-    - cp tests/files/token_storage.json search/
+    - cp digikey-token/token_storage.json search/
     - cat search/token_storage.json
     - python test_digikey_api.py
     - cat search/token_storage.json
