@@ -1,46 +1,18 @@
 dist: bionic
-
-branches:
-  only:
-  - master
   
 language: python
 python:
     - 3.8
     - 3.7
     - 3.6
-matrix:
-    allow_failures:
-        - python: 3.7
-        - python: 3.6
-
-# Reference: https://docs.coveralls.io/parallel-build-webhook
-# env:
-#   global:
-#     - COVERALLS_PARALLEL=true
-notifications:
-    webhooks: https://coveralls.io/webhook
-
-apt-packages:
-    - sqlite3
 
 before_install:
     - pip install invoke
-    # InvenTree Setup
-    - git clone https://github.com/inventree/InvenTree/
-    - cp tests/files/inventree_default_db.sqlite3 InvenTree/
-    - cd InvenTree/ && invoke install && invoke migrate && cd -
-    # Ki-nTree setup
-    # Remove inventree as conflict with submodule
-    - pip uninstall inventree -y
     - invoke install
-    - cp tests/files/results.tgz search/
-    - cd search/ && tar xvf results.tgz && cd -
     
 install: skip
 
-script: invoke test
-
-after_success:
-    - coveralls
-    - invoke build
+script: 
+    - cat search/token_storage.json
+    - python test_digikey_api.py
+    - cat search/token_storage.json
