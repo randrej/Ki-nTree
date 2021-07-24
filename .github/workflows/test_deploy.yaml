@@ -130,11 +130,14 @@ jobs:
         uses: actions/checkout@v2
       - name: Alter the version in pyproject.toml
         run: >
+          GTAG=$(echo $REF | sed -e 's#.*/##') &&
           sed
           --in-place
           --expression
-          "s/version = \".*\" # placeholder/version = \"$(git describe --abbrev=0)\"/g"
+          "s/version = \".*\" # placeholder/version = \"$GTAG\"/g"
           pyproject.toml
+        env:
+          REF: ${{ github.ref }}
       - name: Display the inferred version
         run: head pyproject.toml
       - name: Set up Python 3.9
