@@ -135,6 +135,8 @@ jobs:
           --expression
           "s/version = \".*\" # placeholder/version = \"$(git describe --abbrev=0)\"/g"
           pyproject.toml
+      - name: Display the inferred version
+        run: head pyproject.toml
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
