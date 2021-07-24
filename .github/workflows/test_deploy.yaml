@@ -126,7 +126,7 @@ jobs:
           --expression
           "s/version = \".*\" # placeholder/version = \"$(git describe --abbrev=0)\"/g"
           pyproject.toml
-      - name: build and publish to test pypi
+      - name: Build and publish to test pypi
         uses: JRubics/poetry-publish@v1.6
         with:
           pypi_token: ${{ secrets.TEST_PYPI_TOKEN }}
