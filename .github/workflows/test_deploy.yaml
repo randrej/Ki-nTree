@@ -4,13 +4,45 @@ on:
   push:
     branches:
       - master
-    tags:
-      - "*.*.*"
   pull_request:
     branches:
       - master
 
 jobs:
+  style:
+    name: Style check
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.7, 3.9]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -U flake8
+      - name: PEP checks
+        run: >
+          flake8
+          tasks.py
+          kintree/kintree_gui.py
+          run_tests.py
+          kintree/setup_inventree.py
+          kintree/common/
+          kintree/config/
+          kintree/database/
+          kintree/kicad/__init__.py
+          kintree/kicad/kicad_interface.py
+          kintree/kicad/kicad_schlib.py
+          kintree/kicad/schlib.py
+          kintree/search/*.py
+
   tests:
     name: Integration tests
 
@@ -24,9 +56,8 @@ jobs:
       TOKEN_DIGIKEY: ${{ secrets.TOKEN_DIGIKEY }}
 
     strategy:
-      max-parallel: 1
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.7, 3.9]
 
     steps:
       - name: Checkout code
@@ -80,3 +111,17 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "Updated token"
           git push origin master
           cd ..
+
+  test-publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    needs:
+      - style
+      - tests
+    steps:
+      - name: build and publish to test pypi
+        uses: JRubics/poetry-publish@v1.6
+        with:
+          pypi_token: ${{ secrets.TEST_PYPI_TOKEN }}
+          repository_url: "https://test.pypi.org/legacy/"
+          ignore_dev_requirements: "yes"
